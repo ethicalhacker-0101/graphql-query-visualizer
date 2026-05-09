@@ -3,25 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GraphQL Query Visualizer</title>
+    <title>GraphQL Query Visualizer — Dark Dashboard</title>
+    <meta name="description" content="Professional GraphQL query visualizer with interactive node graph, syntax highlighting, and performance analysis.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🚀 GraphQL Query Visualizer</h1>
-            <p>Easy to understand GraphQL queries with syntax highlighting</p>
-        </header>
+    <!-- Ambient background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
 
-        <main>
-            <div class="content-wrapper">
-                <!-- Query Input Section -->
-                <section class="section">
-                    <h2>📝 Enter Your GraphQL Query</h2>
-                    <textarea id="queryInput" placeholder="Paste your GraphQL query here...
-Example:
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <path d="M14 2L2 8.5V19.5L14 26L26 19.5V8.5L14 2Z" stroke="url(#brandGrad)" stroke-width="2" fill="none"/>
+                        <path d="M14 2V26M2 8.5L26 19.5M26 8.5L2 19.5" stroke="url(#brandGrad)" stroke-width="1.5" opacity="0.5"/>
+                        <circle cx="14" cy="14" r="3" fill="url(#brandGrad)"/>
+                        <defs>
+                            <linearGradient id="brandGrad" x1="2" y1="2" x2="26" y2="26">
+                                <stop stop-color="#a855f7"/>
+                                <stop offset="1" stop-color="#06b6d4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="brand-text">GQL Visualizer</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="editor" id="navEditor">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+                    <span>Query Editor</span>
+                </button>
+                <button class="nav-item" data-tab="graph" id="navGraph">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    <span>Node Graph</span>
+                </button>
+                <button class="nav-item" data-tab="analysis" id="navAnalysis">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <span>Analysis</span>
+                </button>
+                <button class="nav-item" data-tab="performance" id="navPerformance">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+                    <span>Performance</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-status">
+                    <span class="status-dot"></span>
+                    <span>Ready</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <button class="menu-toggle" id="menuToggle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <h1 class="topbar-title">GraphQL Query Visualizer</h1>
+                <div class="topbar-actions">
+                    <div class="speed-indicator" id="speedIndicator" title="Parse speed">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+                        <span id="parseSpeed">0ms</span>
+                    </div>
+                    <button class="topbar-btn" id="sampleBtn" title="Load sample query">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Sample
+                    </button>
+                    <button class="topbar-btn accent" id="visualizeBtn" title="Visualize query (Ctrl+Enter)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+                        Visualize
+                    </button>
+                </div>
+            </header>
+
+            <!-- Tab Panels -->
+            <!-- Editor Tab -->
+            <div class="tab-panel active" id="panelEditor">
+                <div class="editor-layout">
+                    <div class="editor-pane">
+                        <div class="pane-header">
+                            <span class="pane-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>
+                                Input
+                            </span>
+                            <button class="pane-action" id="clearBtn" title="Clear editor">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,01-2,2H7a2,2,0,01-2-2V6m3,0V4a2,2,0,012-2h4a2,2,0,012,2v2"/></svg>
+                            </button>
+                        </div>
+                        <div class="editor-wrapper">
+                            <div class="line-numbers" id="lineNumbers"></div>
+                            <textarea id="queryInput" spellcheck="false" placeholder="# Enter your GraphQL query here...
+# Press Ctrl+Enter to visualize
+
 query GetUser {
   user(id: 1) {
     id
@@ -30,67 +112,197 @@ query GetUser {
     posts {
       id
       title
+      comments {
+        text
+        author
+      }
     }
   }
 }"></textarea>
-                    <div class="button-group">
-                        <button id="visualizeBtn" class="btn btn-primary">Visualize Query</button>
-                        <button id="clearBtn" class="btn btn-secondary">Clear</button>
-                    </div>
-                </section>
-
-                <!-- Visualizer Section -->
-                <section class="section">
-                    <h2>✨ Query Visualization</h2>
-                    <div class="visualization-wrapper">
-                        <!-- Syntax Highlighted Code -->
-                        <div class="code-block">
-                            <h3>Highlighted Query</h3>
-                            <pre><code id="highlightedCode" class="language-graphql"></code></pre>
                         </div>
+                    </div>
+                    <div class="output-pane">
+                        <div class="pane-header">
+                            <span class="pane-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+                                Highlighted Output
+                            </span>
+                            <div class="importance-legend">
+                                <span class="legend-item"><span class="legend-dot critical"></span>Critical</span>
+                                <span class="legend-item"><span class="legend-dot high"></span>High</span>
+                                <span class="legend-item"><span class="legend-dot normal"></span>Normal</span>
+                            </div>
+                        </div>
+                        <div class="highlighted-output" id="highlightedOutput">
+                            <div class="empty-state">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                                <p>Enter a query and click <strong>Visualize</strong></p>
+                                <span>or press <kbd>Ctrl</kbd> + <kbd>Enter</kbd></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Structure Tree -->
-                        <div class="structure-block">
+            <!-- Node Graph Tab -->
+            <div class="tab-panel" id="panelGraph">
+                <div class="graph-container">
+                    <div class="graph-toolbar">
+                        <span class="pane-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            Interactive Node Graph
+                        </span>
+                        <div class="graph-controls">
+                            <button class="graph-ctrl-btn" id="zoomIn" title="Zoom in">+</button>
+                            <button class="graph-ctrl-btn" id="zoomOut" title="Zoom out">−</button>
+                            <button class="graph-ctrl-btn" id="resetGraph" title="Reset view">⟳</button>
+                        </div>
+                    </div>
+                    <canvas id="graphCanvas"></canvas>
+                    <div class="graph-tooltip" id="graphTooltip"></div>
+                    <div class="graph-empty" id="graphEmpty">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8">
+                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                        <p>Visualize a query to see the node graph</p>
+                        <span>Nodes represent fields and edges show parent-child relationships</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div class="tab-panel" id="panelAnalysis">
+                <div class="analysis-layout">
+                    <!-- Stats Row -->
+                    <div class="stats-row" id="statsRow">
+                        <div class="stat-card">
+                            <div class="stat-icon query-type-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Type</span>
+                                <span class="stat-value" id="queryType">—</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon query-name-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Name</span>
+                                <span class="stat-value" id="queryName">—</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon fields-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Fields</span>
+                                <span class="stat-value" id="fieldsCount">—</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon depth-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Max Depth</span>
+                                <span class="stat-value" id="depthLevel">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Field Analysis -->
+                    <div class="analysis-card">
+                        <div class="card-header">
+                            <h3>Field Analysis</h3>
+                            <span class="badge" id="fieldBadge">0 fields</span>
+                        </div>
+                        <div id="fieldAnalysis" class="field-list">
+                            <div class="empty-state small">
+                                <p>No fields to analyze yet</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Query Structure Tree -->
+                    <div class="analysis-card">
+                        <div class="card-header">
                             <h3>Query Structure</h3>
-                            <div id="queryTree" class="tree-view"></div>
+                        </div>
+                        <div id="queryTree" class="tree-view">
+                            <div class="empty-state small">
+                                <p>No structure to display</p>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
+            </div>
 
-                <!-- Query Info Section -->
-                <section class="section">
-                    <h2>ℹ️ Query Information</h2>
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <span class="info-label">Query Type:</span>
-                            <span id="queryType" class="info-value">-</span>
+            <!-- Performance Tab -->
+            <div class="tab-panel" id="panelPerformance">
+                <div class="perf-layout">
+                    <div class="perf-score-card" id="perfScoreCard">
+                        <div class="perf-ring-wrapper">
+                            <svg class="perf-ring" viewBox="0 0 120 120">
+                                <defs>
+                                    <linearGradient id="perfGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#a855f7"/>
+                                        <stop offset="100%" stop-color="#06b6d4"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle class="perf-ring-bg" cx="60" cy="60" r="52"/>
+                                <circle class="perf-ring-fill" id="perfRingFill" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+                            </svg>
+                            <div class="perf-ring-label">
+                                <span class="perf-score-value" id="perfScore">—</span>
+                                <span class="perf-score-unit">/ 100</span>
+                            </div>
                         </div>
-                        <div class="info-card">
-                            <span class="info-label">Query Name:</span>
-                            <span id="queryName" class="info-value">-</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Fields Count:</span>
-                            <span id="fieldsCount" class="info-value">-</span>
-                        </div>
-                        <div class="info-card">
-                            <span class="info-label">Depth Level:</span>
-                            <span id="depthLevel" class="info-value">-</span>
+                        <div class="perf-score-info">
+                            <h3>Query Health Score</h3>
+                            <p id="perfSummary">Visualize a query to see its performance analysis</p>
                         </div>
                     </div>
-                </section>
 
-                <!-- Analysis Section -->
-                <section class="section">
-                    <h2>📊 Field Analysis</h2>
-                    <div id="fieldAnalysis" class="field-list"></div>
-                </section>
+                    <div class="perf-metrics" id="perfMetrics">
+                        <div class="perf-metric">
+                            <span class="perf-metric-label">Parse Time</span>
+                            <span class="perf-metric-value" id="metricParseTime">—</span>
+                        </div>
+                        <div class="perf-metric">
+                            <span class="perf-metric-label">Nesting Depth</span>
+                            <div class="perf-bar-wrapper">
+                                <div class="perf-bar" id="barDepth" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div class="perf-metric">
+                            <span class="perf-metric-label">Field Count</span>
+                            <div class="perf-bar-wrapper">
+                                <div class="perf-bar" id="barFields" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div class="perf-metric">
+                            <span class="perf-metric-label">Argument Usage</span>
+                            <div class="perf-bar-wrapper">
+                                <div class="perf-bar" id="barArgs" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="perf-suggestions" id="perfSuggestions">
+                        <h3>Optimization Suggestions</h3>
+                        <div class="suggestions-list" id="suggestionsList">
+                            <div class="empty-state small">
+                                <p>Run a visualization to get suggestions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
-
-        <footer>
-            <p>© 2026 GraphQL Query Visualizer | Easy GraphQL Understanding</p>
-        </footer>
     </div>
 
     <script src="script.js"></script>
