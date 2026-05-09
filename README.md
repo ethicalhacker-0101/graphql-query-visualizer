@@ -1,55 +1,175 @@
 # GraphQL Query Visualizer
 
-A lightweight, static frontend tool for understanding GraphQL queries with:
+Interactive visualization tool for understanding GraphQL query structures, nested relationships, and recursive query patterns.
 
-- syntax-highlighted query display,
-- simple structure visualization,
-- query metadata (operation type, name, field count, depth),
-- field-by-field analysis.
+---
 
-## Run locally
+## Overview
 
-No build step is required.
+GraphQL queries can become difficult to read when multiple nested relationships and recursive structures are involved. This project was built to simplify the understanding of complex GraphQL queries through visual graph-based representations.
 
-### Option 1: Open directly
-Open `index.html` in your browser.
+The application converts GraphQL queries into structured visual flows, making it easier to inspect relationships between entities, analyze query depth, and understand overall query architecture.
 
-### Option 2: Serve over a local static server (recommended)
-From the repository root, run one of:
+This project focuses on developer experience, query readability, visualization, and GraphQL learning.
 
-```bash
-python3 -m http.server 8000
+---
+
+## Features
+
+* Visual representation of GraphQL queries
+* Nested relationship visualization
+* Recursive query structure support
+* Real-time query parsing
+* Lightweight frontend architecture
+* Dark dashboard UI
+* Large query rendering support
+* Developer-friendly interface
+* Free and open source for everyone
+
+---
+
+## Use Cases
+
+### Learning GraphQL
+
+Understand how entities connect inside nested GraphQL queries.
+
+### Query Debugging
+
+Inspect deeply nested queries that are difficult to analyze in plain text.
+
+### Visualization
+
+View relationships between users, posts, comments, followers, and recursive structures.
+
+### Security Research
+
+Useful for studying:
+
+* Query depth analysis
+* Recursive nesting behavior
+* Query complexity patterns
+* GraphQL attack surface concepts
+
+---
+
+## Example Query
+
+```graphql
+query {
+  user(id: "1") {
+    username
+
+    posts {
+      title
+
+      comments {
+        text
+
+        user {
+          username
+        }
+      }
+    }
+
+    followers {
+      username
+    }
+  }
+}
 ```
 
-Then open `http://localhost:8000`.
+---
 
-## Project structure
+## Example Structure
 
-- `index.html` — App layout and UI sections.
-- `script.js` — App behavior, query analysis, rendering.
-- `styles.css` — Visual styling.
+```text
+User
+ ├── Posts
+ │    └── Comments
+ │         └── User
+ └── Followers
+```
 
-## Current parser limitations
+---
 
-The current analyzer is intentionally simple and uses regular expressions and line-by-line parsing. It is best for beginner-friendly or straightforward GraphQL queries.
+## Tech Stack
 
-Known limitations include:
+* HTML5
+* CSS3
+* JavaScript
+* GraphQL Query Parsing Concepts
 
-- partial/incorrect handling of fragments,
-- aliases may not be represented accurately,
-- directives are not fully modeled,
-- multiline or deeply nested argument objects are not robustly parsed,
-- tree output is indentation-based, not a full AST tree.
+---
 
-## Suggested roadmap
+## Project Structure
 
-1. Replace regex parsing with GraphQL AST parsing.
-2. Add automated tests for query analysis behavior.
-3. Improve error presentation (inline UI errors vs. browser alerts).
-4. Evolve indentation tree into a nested structural tree.
+```text
+graphql-query-visualizer/
+│
+├── index.html
+├── styles.css
+├── script.js
+└── README.md
+```
 
-## Contributing notes
+---
 
-- Keep the app static and dependency-light unless a change requires otherwise.
-- Prefer readable JavaScript over clever parsing shortcuts.
-- Run formatting before commit.
+## Live Demo
+
+https://ethicalhacker-0101.github.io/graphql-query-visualizer/
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/ethicalhacker-0101/graphql-query-visualizer.git
+```
+
+Run locally by opening:
+
+```bash
+index.html
+```
+
+---
+
+## Future Improvements
+
+Planned improvements for future versions:
+
+* Interactive draggable graph nodes
+* Zoom and pan support
+* GraphQL schema visualization
+* Query depth analysis
+* Complexity scoring
+* Export graph as image
+* Syntax highlighting
+* Performance optimization for large queries
+
+---
+
+## Open Source
+
+This project is completely free and open source for developers, students, researchers, and anyone interested in GraphQL visualization and learning.
+
+Contributions, suggestions, and improvements are always welcome.
+
+---
+
+## Notes
+
+This project is intended for educational and development purposes. Some examples may demonstrate recursive or deeply nested GraphQL queries to help visualize query complexity and structure.
+
+---
+
+## Author
+
+Builder
+
+Vibe coder focused on frontend development, GraphQL tooling, visualization systems, and security-oriented developer utilities.
+
+Built with the help of AI-assisted development tools for faster experimentation, learning, and prototyping.
