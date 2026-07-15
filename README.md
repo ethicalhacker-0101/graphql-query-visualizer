@@ -163,13 +163,3 @@ Contributions, suggestions, and improvements are always welcome.
 ## Notes
 
 This project is intended for educational and development purposes. Some examples may demonstrate recursive or deeply nested GraphQL queries to help visualize query complexity and structure.
-
----
-
-## Author
-
-Builder
-
-Vibe coder focused on frontend development, GraphQL tooling, visualization systems, and security-oriented developer utilities.
-
-Built with the help of AI-assisted development tools for faster experimentation, learning, and prototyping.
